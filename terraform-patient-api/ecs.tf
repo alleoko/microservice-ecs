@@ -68,7 +68,7 @@ resource "aws_ecs_service" "main" {
   }
 
   load_balancer {
-    target_group_arn = "data.terraform_remote_state.infra.outputs.api_target_group_arns["patient"]"
+    target_group_arn = data.terraform_remote_state.infra.outputs.api_target_group_arns["patient"]
     container_name   = "${var.app_name}-patient-api"
     container_port   = 30000
   }

@@ -10,7 +10,10 @@ resource "aws_codebuild_project" "main" {
   service_role  = data.terraform_remote_state.infra.outputs.codebuild_role_arn
 
   artifacts { type = "CODEPIPELINE" }
-  cache { type = "LOCAL", modes = ["LOCAL_DOCKER_LAYER_CACHE", "LOCAL_SOURCE_CACHE"] }
+  cache { 
+    type = "LOCAL" 
+    modes = ["LOCAL_DOCKER_LAYER_CACHE", "LOCAL_SOURCE_CACHE"] 
+    }
 
   environment {
     compute_type                = "BUILD_GENERAL1_SMALL"
@@ -19,14 +22,34 @@ resource "aws_codebuild_project" "main" {
     image_pull_credentials_type = "CODEBUILD"
     privileged_mode             = true
 
-    environment_variable { name = "AWS_DEFAULT_REGION", value = var.aws_region }
-    environment_variable { name = "AWS_ACCOUNT_ID",     value = data.aws_caller_identity.current.account_id }
-    environment_variable { name = "ECR_REPO_URI",       value = aws_ecr_repository.main.repository_url }
-    environment_variable { name = "CONTAINER_NAME",     value = "${var.app_name}-webapp" }
+    environment_variable { 
+      name = "AWS_DEFAULT_REGION" 
+      value = var.aws_region 
+      }
+    environment_variable { 
+      name = "AWS_ACCOUNT_ID"     
+      value = data.aws_caller_identity.current.account_id 
+      }
+    environment_variable { 
+      name = "ECR_REPO_URI"       
+      value = aws_ecr_repository.main.repository_url 
+      }
+    environment_variable { 
+      name = "CONTAINER_NAME"     
+      value = "${var.app_name}-webapp" 
+      }
   }
 
-  source { type = "CODEPIPELINE", buildspec = "buildspec.yml" }
-  logs_config { cloudwatch_logs { group_name = "/codebuild/${var.app_name}-webapp", stream_name = "build" } }
+  source { 
+    type = "CODEPIPELINE" 
+    buildspec = "buildspec.yml" 
+    }
+  logs_config { 
+    cloudwatch_logs { 
+      group_name = "/codebuild/${var.app_name}-webapp" 
+      stream_name = "build" 
+      } 
+      }
   tags = local.common_tags
 }
 
